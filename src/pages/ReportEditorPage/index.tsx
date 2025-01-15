@@ -41,7 +41,14 @@ const ReportEditorPage = () =>  {
   const handleSaveReport = async () => {
     if (!ultrasoundData || !savedReport) return null
     saveReport({descriptions: finalTexts, reportId: savedReport.reportId, reportTitle})
-      .then(res => console.log(res))
+      .then(res => {
+        if (res.ok) {
+          moveToReports()
+        } else { res.json().then(e => window.alert(e.message)) }
+      })
+      .catch(e => {
+        console.error(e)
+      })
   }
 
   const copyContent = () => {

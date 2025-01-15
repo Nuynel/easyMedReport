@@ -12,7 +12,7 @@ const signIn = async (data: {pass: string}) => {
       body: JSON.stringify(data)
     }).then(res => res.status)
   } catch (e) {
-    console.error(e)
+    window.alert(e)
   }
 }
 

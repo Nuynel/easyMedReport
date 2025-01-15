@@ -52,14 +52,14 @@ const OrganDescriptionBlock = ({organName, organData, savedData, setData, remove
   }, [descriptions])
 
   return (
-    <div className='border border-gray-500 rounded-md mb-4 p-4'>
+    <div className='border border-gray-500 rounded-md mb-4 p-4 w-full'>
       <div className='flex items-center justify-between mb-4'>
         <div className='mr-4 text-lg font-bold'>{organName}</div>
         <HoldButton text='Удалить сущность' className='' handleOnClick={removeData}/>
       </div>
       <div className='flex mb-4 max-w-full items-center justify-between'>
         <select
-          className='grow border rounded-md p-2'
+          className='border rounded-md p-2 max-w-[calc(100%-8rem)]'
           value={newPathology}
           onChange={handleSetNewPathology}
         >
@@ -69,7 +69,7 @@ const OrganDescriptionBlock = ({organName, organData, savedData, setData, remove
           ))}
         </select>
         <button
-          className='bg-green-400 disabled:bg-gray-300 hover:bg-green-300 active:bg-green-600 transition-all duration-300 text-white rounded-xl px-4 ml-4 h-12'
+          className='bg-green-400 disabled:bg-gray-300 hover:bg-green-300 active:bg-green-600 transition-all duration-300 text-white rounded-xl px-4 ml-4 h-12 w-28'
           onClick={addNewPathology}
           disabled={!newPathology}
         >Добавить</button>

@@ -147,7 +147,7 @@ export const initRoutes = (app: Application) => {
     try {
       const { reportId, reportTitle, descriptions } = req.body;
       if (!reportId || !reportTitle || !descriptions) {
-        return res.status(400).send({ message: 'Поля reportId, reportTitle, descriptions обязательны.' });
+        return res.status(400).send({ message: 'Нужно добавить кличку питомца и выбрать как минимум одно описание' });
       }
 
       if (!db.data.reports[reportId]) {

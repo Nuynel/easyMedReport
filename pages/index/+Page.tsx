@@ -1,11 +1,3 @@
-// import {HeroPage} from "../../src/pages/Hero";
+import LoginPage from "../../src/pages/LoginPage";
 
-// export { HeroPage as Page }
-
-const Page = () =>  (
-    <div>
-        TEST
-    </div>
-)
-
-export default Page
+export {LoginPage as Page}

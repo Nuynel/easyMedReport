@@ -8,7 +8,6 @@ declare global {
         title: string | undefined;
       };
       urlOriginal: string | undefined;
-      // locale: string;
     }
   }
 }

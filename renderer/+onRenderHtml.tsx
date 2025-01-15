@@ -40,7 +40,6 @@ const onRenderHtml: OnRenderHtmlAsync = async (pageContext: PageContextServer): 
       <body>
         <div id="react-root">${dangerouslySkipEscape(pageHtml)}</div>
       </body>
-      <script>!function(){const e=localStorage.getItem("theme"),t=window.matchMedia("(prefers-color-scheme: dark)").matches;("dark"===e||(!e&&t))&&document.body.classList.add("dark")}();</script>
     </html>`
 
   return {

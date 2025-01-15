@@ -7,10 +7,7 @@ const config: UserConfig = {
   plugins: [
     react(),
     vike({
-      prerender: {
-        partial: false,
-        noExtraDir: true,
-      }
+      prerender: true
     }),
     svgr({include: '**/*.svg'}),
   ]

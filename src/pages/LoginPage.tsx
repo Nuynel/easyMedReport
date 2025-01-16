@@ -10,7 +10,7 @@ const signIn = async (data: {pass: string}) => {
       },
       credentials: "include",
       body: JSON.stringify(data)
-    }).then(res => res.status)
+    })
   } catch (e) {
     window.alert(e)
   }
@@ -23,10 +23,14 @@ const LoginPage = () => {
   };
 
   const handleLogin = () => {
-    signIn({pass}).then(resStatus => {
-      if (resStatus && resStatus === 200) {
+    signIn({pass}).then(res => {
+      if (res && res.status === 200) {
         sessionStorage.setItem('authorized', 'true')
         navigate('/reports')
+      } else if (res && res.status === 401) {
+        window.alert('Пароль неверный')
+      } else {
+        window.alert('Упс, скажи Алисе, что не можешь войти')
       }
     })
   }

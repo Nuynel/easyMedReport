@@ -12,7 +12,8 @@ const HoldButton = ({text, className, handleOnClick}: HoldButtonProps) => {
   const [progress, setProgress] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleMouseDown = () => {
+  const handleMouseDown = (event: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
     setIsHolding(true);
     let start = 0;
 
@@ -43,6 +44,9 @@ const HoldButton = ({text, className, handleOnClick}: HoldButtonProps) => {
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchStart={handleMouseDown}
+      onTouchEnd={handleMouseUp}
+      onTouchMove={handleMouseUp}
     >
       <div
         className="absolute top-0 left-0 h-full bg-red-600"

@@ -183,4 +183,23 @@ export const initRoutes = (app: Application) => {
       if (e instanceof Error) res.status(500).send({ message: 'Ошибка при удалении отчета', error: e.message });
     }
   });
+
+  // выкачать базу
+  app.get('/api/db', async (req, res) => {
+    try {
+      res.send(db.data)
+    } catch (e) {
+      if (e instanceof Error) res.status(500).send({ message: 'Ошибка при удалении отчета', error: e.message });
+    }
+  })
+
+  // закачать базу
+  app.post('/api/db', async (req, res) => {
+    try {
+      db.data = req.body
+      await db.write();
+    } catch (e) {
+      if (e instanceof Error) res.status(500).send({ message: 'Ошибка при удалении отчета', error: e.message });
+    }
+  })
 };

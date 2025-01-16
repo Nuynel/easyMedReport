@@ -8,7 +8,7 @@ import { initRoutes } from "./router/index.js";
 
 const isProduction = process.env.NODE_ENV === 'production'
 const CORS_ORIGIN = process.env.CORS_ORIGIN;
-const PORT = process.env.PORT || 57736
+const PORT = process.env.PORT || 80
 const router = express.Router();
 
 const app = express()

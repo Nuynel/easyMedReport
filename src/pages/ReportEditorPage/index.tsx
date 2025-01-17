@@ -6,6 +6,7 @@ import AdditionReportDataEditor from "./AdditionReportDataEditor";
 import Select from "../../shared/ui/Select";
 import ReportButtonsGroup from "./ReportButtonsGroup";
 import {moveToReports, getOrganDescription, getSavedReportData, isUnchangedNormal, getTemplatesForNormal} from "./methods";
+import {checkAndRefreshAccessToken} from "../../shared/methods/tokenMethods";
 
 // todo фильтровать из дескрипшенов норму для другого вида
 
@@ -49,6 +50,7 @@ const ReportEditorPage = () =>  {
   }
 
   useEffect( () => {
+    checkAndRefreshAccessToken()
     getUltrasoundData().then(res => (res && setUltrasoundData(res)))
   }, [])
 
@@ -76,7 +78,7 @@ const ReportEditorPage = () =>  {
   const copyConciseVersion = () => {
     const filteredEntries = Object.entries(editableReport.descriptions)
       .filter(([organ, descriptions]) =>
-        isUnchangedNormal(
+        !isUnchangedNormal(
           organ,
           descriptions,
           ultrasoundData?.[organ] || {},

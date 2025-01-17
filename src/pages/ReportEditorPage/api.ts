@@ -13,5 +13,5 @@ export const saveReport = async (data: ReportData) => {
 
 
 export const getUltrasoundData = async (): Promise<Record<string, OrganUltrasoundData> | undefined> => {
-  return await fetch('/api/descriptions').then(res => res.json())
+  return await fetch('/api/descriptions', {credentials: 'include'}).then(res => res.json())
 }

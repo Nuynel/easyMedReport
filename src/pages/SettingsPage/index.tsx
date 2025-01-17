@@ -1,6 +1,7 @@
 import { navigate } from 'vike/client/router'
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import TemplateSettings from "./TemplateSettings";
+import {checkAndRefreshAccessToken} from "../../shared/methods/tokenMethods";
 
 const SettingsPageWrapper = ({children}: SettingsPageWrapperProps) => (
   <div className='w-full flex justify-center py-4'>
@@ -65,6 +66,10 @@ const SettingsPage = () => {
       <ThemeSettings back={() => toggleShowThemeSettings(!showThemeSettings)}/>
     </SettingsPageWrapper>
   )
+
+  useEffect(() => {
+    checkAndRefreshAccessToken()
+  }, [])
 
   return (
     <SettingsPageWrapper>

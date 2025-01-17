@@ -1,7 +1,7 @@
 import {Templates} from "../../../../types";
 
 export const getAllTemplates = async (): Promise<Templates> => {
-  return await fetch('/api/descriptions').then(res => res.json())
+  return await fetch('/api/descriptions', {credentials: 'include'}).then(res => res.json())
 }
 
 export const saveTemplate = async (data: {organ: string, title: string, description: string}) => {

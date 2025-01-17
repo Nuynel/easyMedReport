@@ -3,6 +3,7 @@ import { navigate } from 'vike/client/router'
 import clsx from "clsx";
 import HoldButton from "../shared/ui/HoldButton";
 import {ReportData} from "../../types";
+import {checkAndRefreshAccessToken} from "../shared/methods/tokenMethods";
 
 type REPORT_IDS = 'report_1' | 'report_2'
 
@@ -28,6 +29,7 @@ const ReportChooserPage = () => {
   const [reports, setReports] = useState<Record<REPORT_IDS, ReportData> | null>(null)
 
   useEffect(() => {
+    checkAndRefreshAccessToken()
     getReports().then(reportsData => setReports(reportsData))
     sessionStorage.setItem('currentReport', 'null')
   }, [])

@@ -1,8 +1,9 @@
-import { Application } from 'express';
+import { Application, Response, Request } from 'express';
 import { JSONFilePreset } from 'lowdb/node';
 // @ts-ignore
 import defaultDB from '../db/db.json' assert { type: "json" };
 import {ReportData} from "../../types/index.js";
+import jwt, {JwtPayload} from "jsonwebtoken";
 
 // Инициализация базы данных
 const db = await JSONFilePreset('db.json', defaultDB);
@@ -11,6 +12,48 @@ const ALL_DESCRIPTIONS = '/api/descriptions';
 const ONE_DESCRIPTION = '/api/description';
 const ALL_REPORTS = '/api/reports';
 const ONE_REPORT = '/api/report';
+type SetCookiesParams = { res: Response, tokenName: COOKIE_TOKEN_NAMES, token: String }
+
+export const setCookie = ({res, tokenName, token}: SetCookiesParams) => {
+  res.cookie(tokenName, token, {
+    maxAge: 3600 * 1000 * 24 * 30,
+    // signed: true, // для этого надо куки парсер поставить
+    httpOnly: true,
+    // secure: false,
+    sameSite: false,
+    secure: process.env.NODE_ENV === 'production',
+  });
+  return res;
+}
+export enum COOKIE_TOKEN_NAMES {
+  REFRESH_TOKEN = 'refresh-token',
+  ACCESS_TOKEN = 'access-token'
+}
+enum TOKEN_TYPES { ACCESS = 'ACCESS', REFRESH = 'REFRESH' }
+const ACCESS_SECRET_KEY = process.env.ACCESS_SECRET_KEY || 'abirvalg';
+const REFRESH_SECRET_KEY = process.env.REFRESH_SECRET_KEY || 'ciclopentanoperhidrofenantreno';
+
+export const generateAccessToken = (): string => jwt.sign({ type: TOKEN_TYPES.ACCESS }, ACCESS_SECRET_KEY, { expiresIn: '10m' });
+export const generateRefreshToken = (trustDevice: boolean): string => jwt.sign({ type: TOKEN_TYPES.REFRESH }, REFRESH_SECRET_KEY, { expiresIn: trustDevice ? '30d' : '1h' });
+function isJwtPayload(decoded: string | JwtPayload): decoded is JwtPayload {
+  return typeof decoded === 'object' && 'type' in decoded;
+}
+const checkJWT = (token: string, key: string, tokenType: TOKEN_TYPES): boolean => {
+  const decoded = jwt.verify(token, key);
+  return isJwtPayload(decoded) && decoded.type === tokenType
+};
+
+export const checkAccessToken = (token: string) => checkJWT(token, ACCESS_SECRET_KEY, TOKEN_TYPES.ACCESS)
+export const checkRefreshToken = (token: string) => checkJWT(token, REFRESH_SECRET_KEY, TOKEN_TYPES.REFRESH)
+
+export const checkCookies = (req: Request): void => {
+  const accessToken = req.cookies[COOKIE_TOKEN_NAMES.ACCESS_TOKEN];
+  console.log(111, accessToken)
+  if (!accessToken) throw new Error('Нет токена доступа')
+  if (typeof accessToken !== 'string') throw new Error('Некорректный токен')
+  const isTokenValid = checkAccessToken(accessToken);
+  if (!isTokenValid) throw new Error('Невалидный токен');
+}
 
 export const initRoutes = (app: Application) => {
   // Middleware для загрузки базы перед каждым запросом
@@ -19,11 +62,15 @@ export const initRoutes = (app: Application) => {
     next();
   });
 
-  app.post<{}, {}, {pass: string}, {}>('/api/sign-in', (req, res) => {
+  app.post<{}, {}, {trustDevice: boolean, pass: string}, {}>('/api/sign-in', (req, res) => {
     try {
-      const {pass} = req.body
+      const {trustDevice, pass} = req.body
       if (pass !== '123!321')  res.status(401).send({ message: 'Неверный пароль' });
-      res.status(200).send()
+      const accessToken = generateAccessToken()
+      const refreshToken = generateRefreshToken(trustDevice)
+      setCookie({res, tokenName: COOKIE_TOKEN_NAMES.ACCESS_TOKEN, token: accessToken})
+      setCookie({res, tokenName: COOKIE_TOKEN_NAMES.REFRESH_TOKEN, token: refreshToken})
+        .status(200).send({accessToken})
     } catch (e) {
       if (e instanceof Error) res.status(500).send({ message: 'Ошибка при входе', error: e.message });
     }
@@ -34,6 +81,7 @@ export const initRoutes = (app: Application) => {
   // Получить все описания (по одному органу или всем)
   app.get<{}, {}, {}, {organ: string | undefined}>(ALL_DESCRIPTIONS, (req, res) => {
     try {
+      checkCookies(req)
       const {organ} = req.query;
       if (organ) {
         const organData = db.data.templates[organ];
@@ -52,6 +100,7 @@ export const initRoutes = (app: Application) => {
   // Получить конкретное описание по органу и типу (например, норму почек)
   app.get<{}, {}, {}, {organ: string, type: string}>(ONE_DESCRIPTION, (req, res) => {
     try {
+      checkCookies(req)
       const { organ, type } = req.query;
       if (!organ || !type) {
         return res.status(400).send({ message: 'Параметры organ и type обязательны.' });
@@ -76,6 +125,7 @@ export const initRoutes = (app: Application) => {
   // Добавить или изменить описание для органа
   app.post<{}, {}, {organ: string, title: string, description: string}, {}>(ONE_DESCRIPTION, async (req, res) => {
     try {
+      checkCookies(req)
       const { organ, title, description } = req.body;
       if (!organ || !title || !description) {
         return res.status(400).send({ message: 'Поля organ, title и description обязательны.' });
@@ -101,6 +151,7 @@ export const initRoutes = (app: Application) => {
   // Удалить описание для органа
   app.delete<{}, {}, {}, {organ: string, type: string}>(ONE_DESCRIPTION, async (req, res) => {
     try {
+      checkCookies(req)
       const { organ, type } = req.query
       if (!organ || !type) {
         return res.status(400).send({ message: 'Поля organ и type обязательны.' });
@@ -122,6 +173,7 @@ export const initRoutes = (app: Application) => {
   // Получить все репорты или выбранный
   app.get<{}, {}, {}, {reportId: string | undefined}>(ALL_REPORTS, (req, res) => {
     try {
+      checkCookies(req)
       const {reportId} = req.query;
       if (reportId) {
         const reportData = db.data.reports[reportId];
@@ -140,6 +192,7 @@ export const initRoutes = (app: Application) => {
   // Сохранить новый репорт
   app.post<{}, {}, ReportData, {}>(ONE_REPORT, async (req, res) => {
     try {
+      checkCookies(req)
       const { reportId, reportTitle, descriptions } = req.body;
       if (!reportId || !reportTitle || !descriptions) {
         return res.status(400).send({ message: 'Нужно добавить кличку питомца и выбрать как минимум одно описание' });
@@ -161,6 +214,7 @@ export const initRoutes = (app: Application) => {
   // Удалить выбранный репорт
   app.delete<{}, {}, {}, {reportId: string}>(ONE_REPORT, async (req, res) => {
     try {
+      checkCookies(req)
       const { reportId } = req.query;
       if (!reportId) {
         return res.status(400).send({ message: 'Поле reportId обязательно.' });
@@ -182,6 +236,7 @@ export const initRoutes = (app: Application) => {
   // выкачать базу
   app.get('/api/db', async (req, res) => {
     try {
+      checkCookies(req)
       res.send(db.data)
     } catch (e) {
       if (e instanceof Error) res.status(500).send({ message: 'Ошибка при удалении отчета', error: e.message });
@@ -191,10 +246,29 @@ export const initRoutes = (app: Application) => {
   // закачать базу
   app.post('/api/db', async (req, res) => {
     try {
+      checkCookies(req)
       db.data = req.body
       await db.write();
     } catch (e) {
       if (e instanceof Error) res.status(500).send({ message: 'Ошибка при удалении отчета', error: e.message });
     }
   })
+
+  app.post<{}, {}, {trustDevice: boolean}, {}>('/api/refresh-token', async (req, res) => {
+    try {
+      const {trustDevice} = req.body
+      if (!req.cookies) throw new Error('Cookies отсутствуют')
+      const refreshToken = req.cookies[COOKIE_TOKEN_NAMES.REFRESH_TOKEN];
+      if (!refreshToken) throw new Error('Нет refresh токена')
+      const isRefreshValid = checkRefreshToken(refreshToken)
+      if (!isRefreshValid) throw new Error('Невалидный refresh токен')
+      const accessToken = generateAccessToken()
+      const newRefreshToken = generateRefreshToken(trustDevice)
+      setCookie({res, tokenName: COOKIE_TOKEN_NAMES.ACCESS_TOKEN, token: accessToken})
+      setCookie({res, tokenName: COOKIE_TOKEN_NAMES.REFRESH_TOKEN, token: newRefreshToken})
+        .status(200).send({accessToken})
+    } catch (e) {
+      if (e instanceof Error) res.status(500).send({ message: 'Ошибка при обновлении токена', error: e.message });
+    }
+  });
 };

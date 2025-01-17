@@ -11,7 +11,10 @@ const signIn = async (data: {pass: string, trustDevice: boolean}): Promise<{acce
     credentials: "include",
     body: JSON.stringify(data)
   }).then(res => {
-    if (res.status === 401) window.alert('Пароль неверный')
+    if (res.status === 401) {
+      window.alert('Пароль неверный')
+      return {accessToken: ''}
+    }
     return res.json()
   })
 }
@@ -26,9 +29,11 @@ const LoginPage = () => {
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     signIn({pass, trustDevice}).then(({accessToken}) => {
-      sessionStorage.setItem('accessToken', accessToken)
-      sessionStorage.setItem('accessTokenExpiry', `${Date.now() + TOKEN_TTL}`);
-      navigate('/reports')
+      if (accessToken) {
+        sessionStorage.setItem('accessToken', accessToken)
+        sessionStorage.setItem('accessTokenExpiry', `${Date.now() + TOKEN_TTL}`);
+        navigate('/reports')
+      }
     }).catch(e => window.alert(e))
   }
 

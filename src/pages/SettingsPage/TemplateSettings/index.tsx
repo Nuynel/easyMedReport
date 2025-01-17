@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Templates} from "./types";
+import {Templates} from "../../../../types";
 import {getAllTemplates} from "./api";
 import TemplateCreator from "./TemplateCreator";
 import TemplateEditor from "./TemplateEditor";

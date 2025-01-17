@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 import {saveTemplate, deleteTemplate} from "./api";
-import {Templates} from "./types";
+import {Templates} from "../../../../types";
 import HoldButton from "../../../shared/ui/HoldButton";
 
 type TemplateEditorProps = { templates: Templates, back: () => void }

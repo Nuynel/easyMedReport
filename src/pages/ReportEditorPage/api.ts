@@ -1,4 +1,4 @@
-import {OrganUltrasoundData, ReportData} from "./types";
+import {OrganUltrasoundData, ReportData} from "../../../types";
 
 export const saveReport = async (data: ReportData) => {
   return await fetch('/api/report', {

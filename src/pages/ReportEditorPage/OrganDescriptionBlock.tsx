@@ -16,13 +16,9 @@ const OrganDescriptionBlock = ({organName, organData, maskOfNorma, savedData, se
   const [descriptions, setDescriptions] = useState<Record<string, string>>({})
   const [selectedPathologies, setSelectedPathologies] = useState<string[]>([])
   const [newPathology, setNewPathology] = useState('')
-  const [isOpen, toggleIsOpen] = useState(true)
+  const [isOpen, toggleIsOpen] = useState(false)
   const [isNormaSelected, setIsNormaSelected] = useState(false)
 
-  // const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  //   setDescriptions(prevValue => ({...prevValue, []}))
-  //   // setDescription({type: event.target.value, text: descriptions[event.target.value].description});
-  // };
   const handleSetNewPathology = (event: React.ChangeEvent<HTMLSelectElement>) => setNewPathology(event.target.value)
 
   const addNewPathology = () => {
@@ -57,15 +53,15 @@ const OrganDescriptionBlock = ({organName, organData, maskOfNorma, savedData, se
   }, [selectedPathologies])
 
   return (
-    <div className={clsx('flex flex-col gap-4 border border-gray-500 rounded-md mb-4 p-4 w-full', isNormaSelected ? 'bg-green-50' : 'bg-red-50')}>
+    <div className={clsx('flex flex-col gap-4 border border-gray-500 rounded-md mb-4 p-4 w-full', isNormaSelected ? 'bg-green-50' : 'bg-violet-50')}>
       <div className='flex items-center justify-between'>
-        <div className='mr-4 text-lg font-bold'>{organName}</div>
+        <div className='mr-4 font-bold'>{organName}</div>
         <div className='flex gap-4'>
-          <HoldButton text='Удалить сущность' className='' handleOnClick={removeData}/>
+          <HoldButton text='Удалить' className='w-24' handleOnClick={removeData}/>
           <button
-            className='bg-blue-400 hover:bg-blue-300 active:bg-blue-600 transition-all duration-300 text-white rounded-xl px-4 ml-4 h-12 w-28'
+            className='bg-blue-400 hover:bg-blue-300 active:bg-blue-600 transition-all duration-300 text-white rounded-xl px-4 size-12'
             onClick={() => toggleIsOpen(!isOpen)}
-          >{isOpen ? 'Свернуть' : 'Развернуть'}</button>
+          ><div className={clsx(!isOpen && 'rotate-180')}>^</div></button>
         </div>
       </div>
       {isOpen && (

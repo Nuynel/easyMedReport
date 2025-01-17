@@ -2,6 +2,7 @@ import { Application } from 'express';
 import { JSONFilePreset } from 'lowdb/node';
 // @ts-ignore
 import defaultDB from '../db/db.json' assert { type: "json" };
+import {ReportData} from "../../types/index.js";
 
 // Инициализация базы данных
 const db = await JSONFilePreset('db.json', defaultDB);
@@ -10,12 +11,6 @@ const ALL_DESCRIPTIONS = '/api/descriptions';
 const ONE_DESCRIPTION = '/api/description';
 const ALL_REPORTS = '/api/reports';
 const ONE_REPORT = '/api/report';
-
-type ReportData = {
-  reportId: string,
-  reportTitle: string,
-  descriptions: Record<string, Record<string, string>>
-}
 
 export const initRoutes = (app: Application) => {
   // Middleware для загрузки базы перед каждым запросом

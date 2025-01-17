@@ -2,18 +2,17 @@ import {useState, useEffect} from "react"
 import { navigate } from 'vike/client/router'
 import clsx from "clsx";
 import HoldButton from "../shared/ui/HoldButton";
+import {ReportData} from "../../types";
 
-type REPORT_IDS = 'report_1' | 'report_2' | 'report_3' | 'report_4' | 'report_5' | 'report_6' | 'report_7' | 'report_8'
-type ReportData = {
-  reportId: string,
-  reportTitle?: string,
-  descriptions?: Record<string, {
-    title: string,
-    description: Record<string, {title: string, description: string}>
-  }>
-}
+type REPORT_IDS = 'report_1' | 'report_2'
+
 const getReports = async (): Promise<Record<REPORT_IDS, ReportData>> => {
-  return fetch('/api/reports').then(res => res.json())
+  return fetch('/api/reports')
+    .then(res => res.json())
+    .catch(e => {
+      window.alert('У нас проблема( Скажи Алисе, что не можешь получить отчеты с бэка')
+      console.error(e)
+    })
 }
 
 const deleteReport = async (reportId: string) => {
@@ -41,7 +40,10 @@ const ReportChooserPage = () => {
   const handleDeleteReport = (reportId: string) => {
     deleteReport(reportId).then(res => {
       if (res.status === 200) return getReports().then(reportsData => setReports(reportsData))
-    }).catch(error => console.error(error))
+    }).catch(e => {
+      window.alert('У нас проблема( Скажи Алисе, что не можешь удалить отчет')
+      console.error(e)
+    })
   }
 
   if (!reports) return null;
@@ -59,11 +61,13 @@ const ReportChooserPage = () => {
                 )}
                 onClick={() => handleOpenReport(key, value)}
               >{value.reportTitle || 'Пусто'}</button>
-              {value.reportTitle && (<HoldButton
-                text='Удалить'
-                className='h-[calc(((100vh-1rem)/9)-1rem)] md:h-12'
-                handleOnClick={() => handleDeleteReport(key)}
-              />)}
+              {value.reportTitle && (
+                <HoldButton
+                  text='Удалить'
+                  className='h-[calc(((100vh-1rem)/9)-1rem)] md:h-12'
+                  handleOnClick={() => handleDeleteReport(key)}
+                />
+              )}
             </div>
           ))
         }

@@ -1,4 +1,4 @@
-import {Templates} from "./types";
+import {Templates} from "../../../../types";
 
 export const getAllTemplates = async (): Promise<Templates> => {
   return await fetch('/api/descriptions').then(res => res.json())

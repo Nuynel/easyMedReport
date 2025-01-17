@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {saveTemplate} from "./api";
-import {Templates} from "./types";
+import {Templates} from "../../../../types";
 
 type TemplateCreatorProps = { templates: Templates, back: () => void }
 

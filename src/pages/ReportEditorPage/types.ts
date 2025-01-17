@@ -1,7 +1,11 @@
 export type ReportData = {
   reportId: string,
   reportTitle: string,
-  descriptions: Record<string, Record<string, string>>
+  descriptions: Record<Organ, OrganUltrasoundData>
 }
 
-export type OrganUltrasoundData = Record<string, string>
+type Organ = string
+type DescriptionKey = string
+type DescriptionValue = string
+
+export type OrganUltrasoundData = Record<DescriptionKey, DescriptionValue>

@@ -62,7 +62,7 @@ const ReportEditorPage = () =>  {
         setSavedReport(savedReportData)
       } else {
         const isTemplateMode = editableReport.reportType === 'TEMPLATE'
-        const normalDescriptions = getTemplatesForNormal(ultrasoundData, `норма ${editableReport.animalSpecies}`)
+        const normalDescriptions = getTemplatesForNormal(ultrasoundData, 'норма')
         setSavedReport((): ReportData => ({...savedReportData, descriptions: isTemplateMode ? normalDescriptions : {}}))
       }
     }
@@ -82,7 +82,7 @@ const ReportEditorPage = () =>  {
           organ,
           descriptions,
           ultrasoundData?.[organ] || {},
-          `норма ${editableReport.animalSpecies}`
+          'норма'
         ))
     const changedOrgans = filteredEntries.map(([key]) => key)
     const unchangedNormalOrgans = Object.keys(editableReport.descriptions)
@@ -122,7 +122,7 @@ const ReportEditorPage = () =>  {
           const savedData = savedReport?.descriptions && savedReport.descriptions[key]
           return (
             <OrganDescriptionBlock
-              maskOfNorma={`норма ${editableReport.animalSpecies}`}
+              maskOfNorma={'норма'}
               key={key}
               organName={key}
               organData={ultrasoundData[key as keyof typeof ultrasoundData]}

@@ -58,7 +58,7 @@ const ReportChooserPage = () => {
             <div key={key} className='flex w-full'>
               <button
                 className={clsx(
-                  'grow transition-all duration-300 text-white rounded-xl px-4 h-[calc(((100vh-1rem)/9)-1rem)] md:h-12',
+                  'grow transition-all duration-300 text-white rounded-xl px-4 h-12',
                   value.reportTitle ? 'bg-blue-500 hover:bg-blue-400 active:bg-blue-600 mr-4' : 'bg-gray-400 hover:bg-gray-300 active:bg-gray-500'
                 )}
                 onClick={() => handleOpenReport(key, value)}
@@ -66,7 +66,7 @@ const ReportChooserPage = () => {
               {value.reportTitle && (
                 <HoldButton
                   text='Удалить'
-                  className='h-[calc(((100vh-1rem)/9)-1rem)] md:h-12'
+                  className='h-12'
                   handleOnClick={() => handleDeleteReport(key)}
                 />
               )}
@@ -74,7 +74,7 @@ const ReportChooserPage = () => {
           ))
         }
         <button
-          className='bg-purple-600 hover:bg-purple-500 active:bg-purple-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-[calc(((100vh-1rem)/9)-1rem)] md:h-12'
+          className='bg-purple-600 hover:bg-purple-500 active:bg-purple-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-12'
           onClick={() => navigate('/settings')}
         >Настройки</button>
       </div>

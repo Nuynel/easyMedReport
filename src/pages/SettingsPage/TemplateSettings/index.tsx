@@ -24,15 +24,15 @@ const TemplateSettings = ({back}: TemplateSettingsProps) => {
   return (
     <>
       <button
-        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-[calc(((100vh-1rem)/3)-1rem)] md:h-12'
+        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-12'
         onClick={() => toggleShowTemplateCreator(!showTemplateCreator)}
       >Добавить шаблон</button>
       <button
-        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-[calc(((100vh-1rem)/3)-1rem)] md:h-12'
+        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-12'
         onClick={() => toggleShowTemplateEditor(!showTemplateEditor)}
       >Изменить шаблон</button>
       <button
-        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-[calc(((100vh-1rem)/3)-1rem)] md:h-12'
+        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-12'
         onClick={back}
       >Назад</button>
     </>

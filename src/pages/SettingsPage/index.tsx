@@ -75,19 +75,19 @@ const SettingsPage = () => {
   return (
     <SettingsPageWrapper>
       <button
-        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-[calc(((100vh-1rem)/4)-1rem)] md:h-12'
+        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-12'
         onClick={() => toggleShowTemplateSettings(!showTemplateSettings)}
       >Редактор шаблонов</button>
       <button
-        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-[calc(((100vh-1rem)/4)-1rem)] md:h-12'
+        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-12'
         onClick={() => toggleShowProfileSettings(!showProfileSettings)}
       >Настройка учетной записи</button>
       <button
-        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-[calc(((100vh-1rem)/4)-1rem)] md:h-12'
+        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-12'
         onClick={() => toggleShowThemeSettings(!showThemeSettings)}
       >Редактор темы</button>
       <button
-        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-[calc(((100vh-1rem)/4)-1rem)] md:h-12'
+        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-12'
         onClick={() => navigate('/reports')}
       >Назад</button>
     </SettingsPageWrapper>

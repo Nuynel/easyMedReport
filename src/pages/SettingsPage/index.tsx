@@ -2,6 +2,7 @@ import { navigate } from 'vike/client/router'
 import {useEffect, useState} from "react";
 import TemplateSettings from "./TemplateSettings";
 import {checkAndRefreshAccessToken} from "../../shared/methods/tokenMethods";
+import JsonFileUploader from "./ProfileSettings/JsonInput";
 
 const SettingsPageWrapper = ({children}: SettingsPageWrapperProps) => (
   <div className='w-full flex justify-center py-4'>
@@ -19,9 +20,9 @@ const ProfileSettings = ({back}: ProfileSettingsProps) => {
   // todo выкачать и закачать базу данных
   return (
     <>
-      Пока не готово
+      <JsonFileUploader/>
       <button
-        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-[calc(((100vh-1rem)/4)-1rem)] md:h-12'
+        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-12'
         onClick={back}
       >Назад</button>
     </>
@@ -37,7 +38,7 @@ const ThemeSettings = ({back}: ThemeSettingsProps) => {
     <>
       Пока не готово
       <button
-        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-[calc(((100vh-1rem)/4)-1rem)] md:h-12'
+        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-12'
         onClick={back}
       >Назад</button>
     </>
@@ -50,6 +51,10 @@ const SettingsPage = () => {
   const [showTemplateSettings, toggleShowTemplateSettings] = useState(false)
   const [showProfileSettings, toggleShowProfileSettings] = useState(false)
   const [showThemeSettings, toggleShowThemeSettings] = useState(false)
+
+  useEffect(() => {
+    checkAndRefreshAccessToken()
+  }, [])
 
   if (showTemplateSettings) return (
     <SettingsPageWrapper>
@@ -66,10 +71,6 @@ const SettingsPage = () => {
       <ThemeSettings back={() => toggleShowThemeSettings(!showThemeSettings)}/>
     </SettingsPageWrapper>
   )
-
-  useEffect(() => {
-    checkAndRefreshAccessToken()
-  }, [])
 
   return (
     <SettingsPageWrapper>

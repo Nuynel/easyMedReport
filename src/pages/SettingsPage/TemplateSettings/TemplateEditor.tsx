@@ -73,7 +73,7 @@ const TemplateEditor = ({templates, back}: TemplateEditorProps) => {
         onClick={handleSaveTemplate}
       >Сохранить шаблон</button>
       <button
-        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-[calc(((100vh-1rem)/4)-1rem)] md:h-12'
+        className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 w-full transition-all duration-300 text-white rounded-xl mr-4 px-4 h-12'
         onClick={back}
       >Назад</button>
     </div>

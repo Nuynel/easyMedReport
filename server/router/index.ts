@@ -237,7 +237,10 @@ export const initRoutes = (app: Application) => {
   app.get('/api/db', async (req, res) => {
     try {
       checkCookies(req)
-      res.send(db.data)
+      const data = db.data;
+      res.setHeader('Content-Disposition', 'attachment; filename="database.json"');
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify(data));
     } catch (e) {
       if (e instanceof Error) res.status(500).send({ message: 'Ошибка при удалении отчета', error: e.message });
     }
@@ -249,6 +252,7 @@ export const initRoutes = (app: Application) => {
       checkCookies(req)
       db.data = req.body
       await db.write();
+      res.status(200).send()
     } catch (e) {
       if (e instanceof Error) res.status(500).send({ message: 'Ошибка при удалении отчета', error: e.message });
     }

@@ -59,7 +59,7 @@ const OrganDescriptionBlock = ({organName, organData, maskOfNorma, savedData, se
         <div className='flex gap-4'>
           <HoldButton text='Удалить' className='w-24' handleOnClick={removeData}/>
           <button
-            className='bg-blue-400 hover:bg-blue-300 active:bg-blue-600 transition-all duration-300 text-white rounded-xl px-4 size-12'
+            className='bg-blue-400 hover:bg-blue-300 active:bg-blue-600 transition-all duration-300 text-white rounded-xl px-4 size-12 select-none'
             onClick={() => toggleIsOpen(!isOpen)}
           ><div className={clsx(!isOpen && 'rotate-180')}>^</div></button>
         </div>
@@ -77,7 +77,7 @@ const OrganDescriptionBlock = ({organName, organData, maskOfNorma, savedData, se
             ))}
           </select>
           <button
-            className='bg-green-400 disabled:bg-gray-300 hover:bg-green-300 active:bg-green-600 transition-all duration-300 text-white rounded-xl px-4 ml-4 h-12 w-28'
+            className='bg-green-400 disabled:bg-gray-300 hover:bg-green-300 active:bg-green-600 transition-all duration-300 text-white rounded-xl px-4 ml-4 h-12 w-28 select-none'
             onClick={addNewPathology}
             disabled={!newPathology}
           >Добавить</button>

@@ -14,6 +14,7 @@ const refreshToken = async () => {
     sessionStorage.setItem('accessToken', accessToken);
     sessionStorage.setItem('accessTokenExpiry', `${Date.now() + TOKEN_TTL}`);
     console.log('Access token refreshed successfully');
+    if (window.location.pathname === '/') navigate('/reports')
   } catch (error) {
     console.error('Error refreshing token:', error);
     sessionStorage.setItem('accessToken', '');
@@ -31,6 +32,7 @@ export const checkAndRefreshAccessToken = async () => {
     await refreshToken();
   } else {
     console.log('Access token is still valid');
+    if (window.location.pathname === '/') navigate('/reports')
   }
   setInterval(async () => {
     console.log('Checking token validity for periodic refresh...');

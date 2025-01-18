@@ -48,7 +48,6 @@ export const checkRefreshToken = (token: string) => checkJWT(token, REFRESH_SECR
 
 export const checkCookies = (req: Request): void => {
   const accessToken = req.cookies[COOKIE_TOKEN_NAMES.ACCESS_TOKEN];
-  console.log(111, accessToken)
   if (!accessToken) throw new Error('Нет токена доступа')
   if (typeof accessToken !== 'string') throw new Error('Некорректный токен')
   const isTokenValid = checkAccessToken(accessToken);

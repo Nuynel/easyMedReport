@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { navigate } from 'vike/client/router'
-import {TOKEN_TTL} from "../shared/methods/tokenMethods";
+import {checkAndRefreshAccessToken, TOKEN_TTL} from "../shared/methods/tokenMethods";
 
 const signIn = async (data: {pass: string, trustDevice: boolean}): Promise<{accessToken: string}> => {
   return await fetch('/api/sign-in', {
@@ -25,6 +25,10 @@ const LoginPage = () => {
   const handleSetPass = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setPass(event.target.value);
   };
+
+  useEffect(() => {
+    checkAndRefreshAccessToken()
+  }, [])
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

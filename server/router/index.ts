@@ -192,8 +192,8 @@ export const initRoutes = (app: Application) => {
   app.post<{}, {}, ReportData, {}>(ONE_REPORT, async (req, res) => {
     try {
       checkCookies(req)
-      const { reportId, reportTitle, descriptions } = req.body;
-      if (!reportId || !reportTitle || !descriptions) {
+      const { reportId, reportTitle, descriptions, reportType, animalSpecies } = req.body;
+      if (!reportId || !reportTitle || !descriptions || !reportType || !animalSpecies) {
         return res.status(400).send({ message: 'Нужно добавить кличку питомца и выбрать как минимум одно описание' });
       }
 
@@ -201,7 +201,7 @@ export const initRoutes = (app: Application) => {
         return res.status(404).send({ message: `Отчет '${reportId}' не найден.` });
       }
 
-      db.data.reports[reportId] = { reportId, reportTitle, descriptions };
+      db.data.reports[reportId] = { reportId, reportTitle, descriptions, reportType, animalSpecies };
       await db.write();
 
       res.status(201).send({ message: `Отчет '${reportId}' добавлен.` });

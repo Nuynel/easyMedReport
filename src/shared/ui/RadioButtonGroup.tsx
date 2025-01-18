@@ -13,7 +13,7 @@ const RadioButtonGroup = ({title, type, value, values, onChange}: RadioButtonGro
       const [fieldValue, fieldTitle] = Object.entries(current)[0]
       return (
         (
-          <div className='flex gap-2 items-center'>
+          <div className='flex gap-2 items-center' key={value+index}>
             <input
               className='size-4 appearance-none border-2 checked:border-4 rounded-full border-gray-300 checked:border-blue-500 transition duration-300'
               type='radio'

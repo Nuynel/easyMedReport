@@ -17,7 +17,6 @@ type ProfileSettingsProps = {
 }
 
 const ProfileSettings = ({back}: ProfileSettingsProps) => {
-  // todo выкачать и закачать базу данных
   return (
     <>
       <JsonFileUploader/>

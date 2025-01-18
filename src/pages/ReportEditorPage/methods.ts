@@ -14,6 +14,7 @@ export const getTemplatesForNormal = (ultrasoundData: Templates, maskOfHealthySt
 export const getSavedReportData = () => {
   const currentReport = sessionStorage.getItem('currentReport')
   const parsedReport: Record<string, ReportData> = currentReport && JSON.parse(currentReport)
+  console.log(parsedReport)
   if (!parsedReport) moveToReports()
   return Object.values<ReportData>(parsedReport)[0]
 }

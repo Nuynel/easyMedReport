@@ -40,7 +40,7 @@ const HoldButton = ({text, className, handleOnClick}: HoldButtonProps) => {
 
   return (
     <button
-      className={clsx('relative w-40 h-12 text-white rounded-xl overflow-hidden bg-red-300', className)}
+      className={clsx('relative h-12 text-white rounded-xl overflow-hidden bg-red-300 px-4', className)}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}

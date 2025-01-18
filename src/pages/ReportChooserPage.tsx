@@ -66,7 +66,6 @@ const ReportChooserPage = () => {
               {value.reportTitle && (
                 <HoldButton
                   text='Удалить'
-                  className='h-12'
                   handleOnClick={() => handleDeleteReport(key)}
                 />
               )}

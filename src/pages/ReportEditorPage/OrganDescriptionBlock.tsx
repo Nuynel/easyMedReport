@@ -57,7 +57,7 @@ const OrganDescriptionBlock = ({organName, organData, maskOfNorma, savedData, se
       <div className='flex items-center justify-between'>
         <div className='mr-4 font-bold'>{organName}</div>
         <div className='flex gap-4'>
-          <HoldButton text='Удалить' className='w-24' handleOnClick={removeData}/>
+          <HoldButton text='Удалить' handleOnClick={removeData}/>
           <button
             className='bg-blue-400 hover:bg-blue-300 active:bg-blue-600 transition-all duration-300 text-white rounded-xl px-4 size-12 select-none'
             onClick={() => toggleIsOpen(!isOpen)}
@@ -87,7 +87,7 @@ const OrganDescriptionBlock = ({organName, organData, maskOfNorma, savedData, se
         <div className='border border-gray-300 rounded-xl p-4 bg-white' key={'organDescription'+pathology}>
           <div className='flex w-full justify-between items-center'>
             <div className='mr-4'>{pathology}</div>
-            <HoldButton text='Удалить описание' className='' handleOnClick={() => handleRemoveData(pathology)}/>
+            <HoldButton text='Удалить описание' handleOnClick={() => handleRemoveData(pathology)}/>
           </div>
           <TextEditor
             text={descriptions[pathology]}

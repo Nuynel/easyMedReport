@@ -43,6 +43,7 @@ const ReportEditorPage = () =>  {
   }
 
   const handleSaveReport = async () => {
+    console.log(savedReport, editableReport)
     if (!ultrasoundData || !savedReport) return null
     saveReport(editableReport)
       .then(res => res.ok ? moveToReports() : res.json().then(e => window.alert(e.message)))
@@ -70,8 +71,14 @@ const ReportEditorPage = () =>  {
 
   useEffect(() => {
     if (savedReport) {
-      setSelectedOrgans( Object.keys(savedReport.descriptions))
-      changeEditableReport(prevState => ({...prevState, reportId: savedReport.reportId, reportTitle: savedReport?.reportTitle || prevState.reportTitle}))
+      setSelectedOrgans(Object.keys(savedReport.descriptions))
+      changeEditableReport(prevState => ({
+        reportId: savedReport.reportId,
+        reportTitle: savedReport?.reportTitle || prevState.reportTitle,
+        descriptions: savedReport?.descriptions || prevState.descriptions,
+        animalSpecies: savedReport?.animalSpecies || prevState.animalSpecies,
+        reportType: savedReport?.reportType || prevState.reportType
+      }))
     }
   }, [savedReport])
 

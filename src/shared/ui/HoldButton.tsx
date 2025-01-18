@@ -52,7 +52,7 @@ const HoldButton = ({text, className, handleOnClick}: HoldButtonProps) => {
         className="absolute top-0 left-0 h-full bg-red-600"
         style={{ width: `${progress}%`, transition: isHolding ? 'none' : 'width 0.2s' }}
       ></div>
-      <span className="relative z-10">{text}</span>
+      <span className="relative z-10 select-none">{text}</span>
     </button>
   );
 };

@@ -61,7 +61,7 @@ const OrganDescriptionBlock = ({organName, organData, maskOfNorma, savedData, se
           <button
             className='bg-blue-400 hover:bg-blue-300 active:bg-blue-600 transition-all duration-300 text-white rounded-xl px-4 size-12 select-none'
             onClick={() => toggleIsOpen(!isOpen)}
-          ><div className={clsx(!isOpen && 'rotate-180')}>^</div></button>
+          ><div className={clsx(isOpen && 'rotate-180')}>^</div></button>
         </div>
       </div>
       {isOpen && (

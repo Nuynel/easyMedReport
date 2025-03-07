@@ -1,149 +1,123 @@
-import {useEffect, useState} from "react";
-import {Templates, OrganUltrasoundData, ReportData, ReportType, AnimalSpecies} from "../../../types";
-import {getUltrasoundData, saveReport} from "./api";
-import OrganDescriptionBlock from "./OrganDescriptionBlock";
-import AdditionReportDataEditor from "./AdditionReportDataEditor";
+import {saveReport} from "./methods/api";
+import OrganDescriptionBlock from "./componets/OrganDescriptionBlock";
+import AdditionReportDataEditor from "./componets/ui/AdditionReportDataEditor";
 import Select from "../../shared/ui/Select";
-import ReportButtonsGroup from "./ReportButtonsGroup";
-import {moveToReports, getOrganDescription, getSavedReportData, isUnchangedNormal, getTemplatesForNormal} from "./methods";
-import {checkAndRefreshAccessToken} from "../../shared/methods/tokenMethods";
+import ReportButtonsGroup from "./componets/ui/ReportButtonsGroup";
+import ReportEditorHeader from "./componets/ui/ReportEditorHeader";
+import { moveToReports } from "./methods/services";
+import {useReportData} from "#root/src/pages/ReportEditorPage/useReportData";
+
+// REPORT - состоит из шаблонов описания к разным органам. У одного органа может быть несколько шаблонов
+// OBSERVATION_TEMPLATE - шаблон описания
+// OBSERVATION_DESCRIPTION - описание с внесенными в него изменениями
 
 // todo фильтровать из дескрипшенов норму для другого вида
 
-const DEFAULT_REPORT_DATA: ReportData = {
-  reportType: 'TEMPLATE',
-  reportTitle: '',
-  reportId: '',
-  animalSpecies: 'кошки',
-  descriptions: {}
-}
+// UseCases:
+// 1) кнопка назад - а) нет никаких изменений - просто выходим назад
+//                   б) есть изменения - bottomSheet => созранить изменения? сохранить / выйти без сохранения
+// 2) обзорное узи / отдельные органы - а) нет изменений от дефолта - просто меняем
+//                                      б) есть изменения => данные отчета будут перезаписаны. Подтвердить? да
+// 3) кошка / осбака - а) нет изменений от дефолта - просто меняем
+//                     б) есть изменения => данные отчета будут перезаписаны. Подтвердить? да
+// 4) кличка питомца - без клички питомца отчет не сохраняется
+// 4) добавить орган - орган должен исчезать из списка доступных к выбору
+// 5) изначально область по органом свернута, при клике по органу - окрывается редактирование органа
+// 6) контекстное меню - удалить орган
+// 7) выбрать описание - описание должно исчезать из списка доступных к выбору
+// 8) изменение описания - изменения вносятся в текущей изменяемый отчет, но пока не сохраняются
+// 9) скопироать все - копируется отчет целиком
+// 10) скопировать сокращенное - копируется только то, что было изменено (опция доступна только для обзорного узи)
+// 11) при открытии редактора подгружаем все шаблоны
+// 12) при открытии редактора грузим отчет, сохраняем его в savedReport, копируем в editableReport
+// 13) после загрузки отчета проверяем, является ли данный отчет дефолтным -
+//                              - если он дефолтный, то (ставим переменную isDefault в значение true?)
+//                              - если он НЕ дефолтный, то (ставим переменную isDefault в значение false?)
+// 14) при сохранении отправляем на бэк editableReport
 
 const ReportEditorPage = () =>  {
-  const [ultrasoundData, setUltrasoundData] = useState<Templates | null>(null)
-  const [savedReport, setSavedReport] = useState<ReportData | null>(null)
-  const [editableReport, changeEditableReport] = useState<ReportData>(DEFAULT_REPORT_DATA)
-  const [selectedOrgans, setSelectedOrgans] = useState<string[]>([]);
+  const {
+    selectedOrgans,
+    allObservationTemplates,
+    savedReport,
+    editableReport,
 
-  const setDescriptionToOrgan = (organName: string, pathologies: OrganUltrasoundData) => {
-    changeEditableReport(prevState => ({...prevState, descriptions: {...prevState.descriptions, [organName]: pathologies}}))
-  }
-  const handleChangeEditableReport = (key: keyof ReportData, value: string | ReportType | AnimalSpecies | Record<string, OrganUltrasoundData>) => {
-    changeEditableReport((prevState => ({...prevState, [key]: value})))
-  }
-  const handleSetSelectedOrgans = (newValue: string) => {
-    setSelectedOrgans((prevState) => [...prevState, newValue])
-  }
-
-  const removeOrgan = (organName: string) => {
-    setSelectedOrgans(prevState => prevState.filter(value => organName !== value))
-    changeEditableReport(prevState => {
-      const filteredKeys = Object.keys(prevState.descriptions).filter(value => value !== organName)
-      return {...prevState, descriptions: filteredKeys.reduce((acc, current) => ({...acc, [current]: prevState.descriptions[current]}), {})}
-    })
-  }
+    handleChangeAdditionalData,
+    handleChangeReportTitle,
+    handleReportSwitchSubmit,
+    setDescriptionToOrgan,
+    handleSetSelectedOrgans,
+    removeOrgan,
+  } = useReportData()
 
   const handleSaveReport = async () => {
-    console.log(savedReport, editableReport)
-    if (!ultrasoundData || !savedReport) return null
+    if (!allObservationTemplates || !editableReport) return null
     saveReport(editableReport)
       .then(res => res.ok ? moveToReports() : res.json().then(e => window.alert(e.message)))
       .catch(e => console.error(e))
   }
 
-  useEffect( () => {
-    checkAndRefreshAccessToken()
-    getUltrasoundData().then(res => (res && setUltrasoundData(res)))
-  }, [])
-
-  useEffect(() => {
-    if (ultrasoundData) {
-      const savedReportData = getSavedReportData()
-      const isSavedReportModified = !!savedReportData.descriptions
-      if (isSavedReportModified) {
-        setSavedReport(savedReportData)
-      } else {
-        const isTemplateMode = editableReport.reportType === 'TEMPLATE'
-        const normalDescriptions = getTemplatesForNormal(ultrasoundData, 'норма')
-        setSavedReport((): ReportData => ({...savedReportData, descriptions: isTemplateMode ? normalDescriptions : {}}))
-      }
-    }
-  }, [ultrasoundData, editableReport.reportType, editableReport.animalSpecies])
-
-  useEffect(() => {
-    if (savedReport) {
-      setSelectedOrgans(Object.keys(savedReport.descriptions))
-      changeEditableReport(prevState => ({
-        reportId: savedReport.reportId,
-        reportTitle: savedReport?.reportTitle || prevState.reportTitle,
-        descriptions: savedReport?.descriptions || prevState.descriptions,
-        animalSpecies: savedReport?.animalSpecies || prevState.animalSpecies,
-        reportType: savedReport?.reportType || prevState.reportType
-      }))
-    }
-  }, [savedReport])
-
   const copyConciseVersion = () => {
-    const filteredEntries = Object.entries(editableReport.descriptions)
-      .filter(([organ, descriptions]) =>
-        !isUnchangedNormal(
-          organ,
-          descriptions,
-          ultrasoundData?.[organ] || {},
-          'норма'
-        ))
-    const changedOrgans = filteredEntries.map(([key]) => key)
-    const unchangedNormalOrgans = Object.keys(editableReport.descriptions)
-      .filter((key) => !changedOrgans.includes(key))
-    const finalText = filteredEntries
-      .map(getOrganDescription)
-      .join('\n\n')
-      .concat(`\n\nВ остальных исследованных органах (${
-        unchangedNormalOrgans.map(organ => organ.toLowerCase()).join(', ')
-      }) видимых ультрасонографических изменений не выявлено.`)
-    navigator.clipboard.writeText(finalText).then(() => console.log('COPIED!'), (err) => {console.error(err)})
+    // const filteredEntries = Object.entries(editableReport.descriptions)
+    //   .filter(([organ, descriptions]) =>
+    //     !isUnchangedNormal(
+    //       descriptions,
+    //       ultrasoundData?.[organ] || {},
+    //       'норма'
+    //     ))
+    // const changedOrgans = filteredEntries.map(([key]) => key)
+    // const unchangedNormalOrgans = Object.keys(editableReport.descriptions)
+    //   .filter((key) => !changedOrgans.includes(key))
+    // const finalText = filteredEntries
+    //   .map(getOrganDescription)
+    //   .join('\n\n')
+    //   .concat(`\n\nВ остальных исследованных органах (${
+    //     unchangedNormalOrgans.map(organ => organ.toLowerCase()).join(', ')
+    //   }) видимых ультрасонографических изменений не выявлено.`)
+    // navigator.clipboard.writeText(finalText).then(() => console.log('COPIED!'), (err) => {console.error(err)})
   }
 
   const copyContent = () => {
-    const finalText = Object.entries(editableReport.descriptions)
-      .map(getOrganDescription)
-      .join('\n\n')
-    navigator.clipboard.writeText(finalText).then(() => console.log('COPIED!'), (err) => {console.error(err)})
+    // const finalText = Object.entries(editableReport.descriptions)
+    //   .map(getOrganDescription)
+    //   .join('\n\n')
+    // navigator.clipboard.writeText(finalText).then(() => console.log('COPIED!'), (err) => {console.error(err)})
   }
 
-  if (!ultrasoundData) return null
+  if (!allObservationTemplates) return null
 
-  const availableOrgans = Object.keys(ultrasoundData).filter(organ => !selectedOrgans.includes(organ));
+  const availableOrgans = Object.keys(allObservationTemplates).filter(organ => !selectedOrgans.includes(organ));
 
   return (
     <div className='w-full flex justify-center py-4'>
       <div className='w-[calc(100vw-2rem)] md:w-[50vw]'>
 
-        <AdditionReportDataEditor
+        <ReportEditorHeader
           report={editableReport}
-          switchReportType={(newReportType) => handleChangeEditableReport('reportType', newReportType)}
-          switchAnimalSpecies={(newAnimalSpecies) => handleChangeEditableReport('animalSpecies', newAnimalSpecies)}
-          handleSetReportData={(newReportTitle) => handleChangeEditableReport('reportTitle', newReportTitle)}
+          switchReportType={(newReportType) => handleChangeAdditionalData('reportType', newReportType)}
+          switchAnimalSpecies={(newAnimalSpecies) => handleChangeAdditionalData('animalSpecies', newAnimalSpecies)}
+          moveToReports={moveToReports}
         />
 
-        {selectedOrgans.map((key) => {
-          const savedData = savedReport?.descriptions && savedReport.descriptions[key]
-          return (
-            <OrganDescriptionBlock
-              maskOfNorma={'норма'}
-              key={key}
-              organName={key}
-              organData={ultrasoundData[key as keyof typeof ultrasoundData]}
-              savedData={savedData || {}}
-              setData={setDescriptionToOrgan}
-              removeData={() => removeOrgan(key)}
-            />
-          )
-        })}
-
+        <AdditionReportDataEditor
+          report={editableReport}
+          handleSetReportData={(newReportTitle) => handleChangeReportTitle(newReportTitle)}
+        />
         <Select availableValues={availableOrgans} setSelectedValues={handleSetSelectedOrgans}/>
 
+        {selectedOrgans.map((key, index) => (
+          <OrganDescriptionBlock
+            key={key+index}
+            organName={key}
+            organData={allObservationTemplates[key as keyof typeof allObservationTemplates]}
+            allSavedData={editableReport?.descriptions || {}}
+            setData={setDescriptionToOrgan}
+            removeData={() => removeOrgan(key)}
+          />
+        ))}
+
         <ReportButtonsGroup
-          showAdditionalButton={editableReport.reportType === 'TEMPLATE'}
+          showAdditionalButton={editableReport.reportType === 'PREDEFINED'}
           handleSaveReport={handleSaveReport}
           copyContent={copyContent}
           copyConciseVersion={copyConciseVersion}

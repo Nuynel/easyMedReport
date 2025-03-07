@@ -21,7 +21,6 @@ const signIn = async (data: {pass: string, trustDevice: boolean}): Promise<{acce
 
 const LoginPage = () => {
   const [pass, setPass] = useState('')
-  const [trustDevice, toggleTrustDevice] = useState(false)
   const handleSetPass = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setPass(event.target.value);
   };
@@ -32,7 +31,7 @@ const LoginPage = () => {
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    signIn({pass, trustDevice}).then(({accessToken}) => {
+    signIn({pass, trustDevice: false}).then(({accessToken}) => {
       if (accessToken) {
         sessionStorage.setItem('accessToken', accessToken)
         sessionStorage.setItem('accessTokenExpiry', `${Date.now() + TOKEN_TTL}`);
@@ -42,31 +41,29 @@ const LoginPage = () => {
   }
 
   return (
-    <div className='w-screen h-screen	 items-center flex justify-center py-4'>
-      <div className='w-[calc(100vw-2rem)] md:w-[50vw]'>
+    <div className='w-screen h-screen items-center bg-gray-100 flex justify-center'>
+      <div className='flex flex-col justify-between h-screen md:h-60 w-screen md:w-80 p-3'>
+        <div className='text-5xl'>
+          📑🐕
+        </div>
         <form onSubmit={handleLogin}>
           <input
             type="password"
             value={pass}
             onInput={handleSetPass}
-            placeholder="Введите пароль"
-            className="border rounded-md p-2 w-full"
+            placeholder="Пиши пароль"
+            className="border-b border-black py-3 w-full text-4xl text-black placeholder:text-black placeholder:opacity-20 bg-transparent focus:outline-none focus:border-b-orange-600"
           />
-          <input
-            type='checkbox'
-            id='trustCheckbox'
-            name='trustCheckbox'
-            onChange={() => toggleTrustDevice(!trustDevice)}
-            checked={trustDevice}
-          />
-          <label htmlFor='trustCheckbox'>Доверять устройству</label>
-
-
           <button
-            className='bg-blue-600 hover:bg-blue-500 active:bg-blue-600 transition-all duration-300 text-white rounded-xl my-2 w-full h-12'
+            className='flex gap-2.5 justify-center items-center bg-orange-600 hover:bg-orange-500 active:bg-orange-600 transition-all duration-300 text-white text-2xl h-18 my-2 w-full h-12'
             type='submit'
-          >Войти</button>
+          >Войти
+            <svg width="18" height="17" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9.58807 16.3153L8.05398 14.7983L13.3807 9.47159H0V7.25568H13.3807L8.05398 1.9375L9.58807 0.411931L17.5398 8.36364L9.58807 16.3153Z" fill="white"/>
+            </svg>
+          </button>
         </form>
+        <div></div>
       </div>
     </div>
   )

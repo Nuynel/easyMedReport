@@ -8,7 +8,7 @@ import jwt, {JwtPayload} from "jsonwebtoken";
 // Инициализация базы данных
 const db = await JSONFilePreset('db.json', defaultDB);
 
-const ALL_DESCRIPTIONS = '/api/descriptions';
+const ALL_OBSERVATION_TEMPLATES = '/api/observation-templates';
 const ONE_DESCRIPTION = '/api/description';
 const ALL_REPORTS = '/api/reports';
 const ONE_REPORT = '/api/report';
@@ -75,21 +75,17 @@ export const initRoutes = (app: Application) => {
     }
   })
 
-  // app.post<{}, {}, {password: string}, {}>('/api/update-pass')
-
   // Получить все описания (по одному органу или всем)
-  app.get<{}, {}, {}, {organ: string | undefined}>(ALL_DESCRIPTIONS, (req, res) => {
+  app.get<{}, {}, {}, {organ: string | undefined}>(ALL_OBSERVATION_TEMPLATES, (req, res) => {
     try {
       checkCookies(req)
       const {organ} = req.query;
       if (organ) {
-        const organData = db.data.templates[organ];
-        if (!organData) {
-          return res.status(404).send({ message: `Орган '${organ}' не найден.` });
-        }
+        const organData = db.data.observation_templates[organ];
+        if (!organData) return res.status(404).send({ message: `Орган '${organ}' не найден.` });
         res.send(organData);
       } else {
-        res.send(db.data.templates);
+        res.send(db.data.observation_templates);
       }
     } catch (e) {
       if (e instanceof Error) res.status(500).send({ message: 'Ошибка при получении описаний', error: e.message });
@@ -105,7 +101,7 @@ export const initRoutes = (app: Application) => {
         return res.status(400).send({ message: 'Параметры organ и type обязательны.' });
       }
 
-      const organData = db.data.templates[organ];
+      const organData = db.data.observation_templates[organ];
       if (!organData) {
         return res.status(404).send({ message: `Орган '${organ}' не найден.` });
       }
@@ -130,13 +126,13 @@ export const initRoutes = (app: Application) => {
         return res.status(400).send({ message: 'Поля organ, title и description обязательны.' });
       }
 
-      if (!db.data.templates[organ]) {
+      if (!db.data.observation_templates[organ]) {
         return res.status(404).send({ message: `'${organ}' не найден.` });
       }
 
-      const isUpdated = !!db.data.templates[organ][title]
+      const isUpdated = !!db.data.observation_templates[organ][title]
 
-      db.data.templates[organ][title] = description;
+      db.data.observation_templates[organ][title] = description;
       await db.write();
 
       res.status(201).send({ message: `Описание '${title}' для '${organ} ${isUpdated ? 'обновлено' : 'добавлено'}'.` });
@@ -156,11 +152,11 @@ export const initRoutes = (app: Application) => {
         return res.status(400).send({ message: 'Поля organ и type обязательны.' });
       }
 
-      if (!db.data.templates[organ] || !db.data.templates[organ][type]) {
+      if (!db.data.observation_templates[organ] || !db.data.observation_templates[organ][type]) {
         return res.status(404).send({ message: `Описание '${type}' для органа '${organ}' не найдено.` });
       }
 
-      delete db.data.templates[organ][type];
+      delete db.data.observation_templates[organ][type];
       await db.write();
 
       res.send({ message: `Описание '${type}' для органа '${organ}' удалено.` });

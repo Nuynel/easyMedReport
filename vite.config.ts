@@ -10,7 +10,12 @@ const config: UserConfig = {
       prerender: true
     }),
     svgr({include: '**/*.svg'}),
-  ]
+  ],
+  resolve: {
+    alias: {
+      "#root": __dirname,
+    }
+  }
 }
 
 export default config

@@ -16,14 +16,11 @@ export default {
       xxl: '1920px'
     },
     extend: {
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: 0 },
-          '100%': { opacity: 100 }
-        }
+      spacing: {
+        18: '4.5rem',
       },
-      animation: {
-        fadeIn: 'fadeIn 200ms ease-in'
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
       }
     },
   },

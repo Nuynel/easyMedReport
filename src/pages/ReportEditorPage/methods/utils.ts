@@ -1,6 +1,7 @@
 import {AnimalSpecies, OrganDescriptions, Templates} from "#root/types";
 
 export const getTemplatesForNormal = (ultrasoundDataByOrgan: Templates, healthyKeyPattern: string): Record<string, OrganDescriptions> => {
+  console.log(ultrasoundDataByOrgan)
   return Object.entries(ultrasoundDataByOrgan).reduce((acc, [key, descriptions]) => {
     const healthyStateKey = Object.keys(descriptions).find(key => key.toLowerCase().includes(healthyKeyPattern))
     return healthyStateKey

@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {AnimalSpecies, OrganDescriptions, ReportData, ReportType, Templates} from "#root/types";
 import {checkAndRefreshAccessToken} from "#root/src/shared/methods/tokenMethods";
 import {getAllObservationTemplates} from "#root/src/pages/ReportEditorPage/methods/api";
-import {getSavedReportData} from "#root/src/pages/ReportEditorPage/methods/services";
+import {getSavedReportData, moveToReports} from "#root/src/pages/ReportEditorPage/methods/services";
 import {getFilterTemplatesByAnimalSpecies, getTemplatesForNormal} from "#root/src/pages/ReportEditorPage/methods/utils";
 
 type ReportDataValues = string | ReportType | AnimalSpecies | Record<string, OrganDescriptions>
@@ -22,16 +22,12 @@ export const useReportData = () => {
   const [selectedOrgans, setSelectedOrgans] = useState<string[]>([]); //                                                  выбранные органы (возможно, лишнее)
 
   const [isReportEdited, setIsReportEdited] = useState(false)
-  const [showAlert, setShowAlert] = useState(false)
-  const [pendingData, setPendingData] = useState<{
-    key: keyof ReportData,
-    value: ReportDataValues,
-    text: string
-  } | null>(null)
+  const [showBottomSheet, setShowBottomSheet] = useState(false)
+  const [popupData, setPopupData] = useState<{text: string, onSubmit: () => void} | null>(null)
 
   useEffect(() => {
     checkAndRefreshAccessToken()
-    getAllObservationTemplates().then(res => (res && setAllObservationTemplates(res)))
+    getAllObservationTemplates().then(res => res && setAllObservationTemplates(res))
   }, [])
 
   useEffect(() => {
@@ -75,35 +71,46 @@ export const useReportData = () => {
     setSelectedOrgans(Object.keys(editableReport.descriptions))
   }, [editableReport.descriptions]);
 
-  const handleChangeAdditionalData = (key: 'reportType' | 'animalSpecies', value: ReportType | AnimalSpecies) => {
-    if (isReportEdited) {
-      setPendingData({ key, value, text: 'Изменение типа отчета обнулит внесенные изменения, подтвердить?' })
-      return setShowAlert(true)
+  const handleChangeAdditionalData = (
+    key: 'reportType' | 'animalSpecies',
+    value: ReportType | AnimalSpecies
+  ) => {
+    if (isReportEdited || (savedReport?.descriptions && Object.keys(savedReport?.descriptions).length)) {
+      setPopupData({
+        text: 'Изменение типа отчета обнулит внесенные изменения, подтвердить?',
+        onSubmit: () => submitChangeReportType(key, value as ReportType | AnimalSpecies)
+      })
+      return setShowBottomSheet(true)
     }
     return setEditableReport((prevState) => ({...prevState, [key]: value}))
+  }
+
+  const handlePopupEvent = () => {
+    if (popupData) popupData.onSubmit()
+    setPopupData(null)
+  }
+
+  const submitChangeReportType = (key: 'reportType' | 'animalSpecies', value: ReportType | AnimalSpecies) => {
+    setEditableReport(prevState => ({...prevState, [key]: value}))
   }
 
   const handleChangeReportTitle = (value: string) => {
     setEditableReport((prevState) => ({...prevState, reportTitle: value}))
   }
 
-  const handleReportSwitchSubmit = () => {
-    if (pendingData) {
-      setEditableReport(prevState => ({...prevState, [pendingData.key]: pendingData.value}))
-      setPendingData(null)
-    }
-  }
-
   const setDescriptionToOrgan = (organName: string, newDescriptions: OrganDescriptions) => {
     setEditableReport(prevState => ({...prevState, descriptions: {...prevState.descriptions, [organName]: newDescriptions}}))
+    setIsReportEdited(!!savedReport && Object.values(editableReport.descriptions) !== Object.values(savedReport.descriptions))
   }
 
   const handleSetSelectedOrgans = (newValue: string) => {
     setSelectedOrgans((prevState) => [...prevState, newValue])
+    console.log(1)
   }
 
   const removeOrgan = (organName: string) => {
     setSelectedOrgans(prevState => prevState.filter(value => value !== organName))
+    setIsReportEdited(!!savedReport && Object.values(editableReport.descriptions) !== Object.values(savedReport.descriptions))
     setEditableReport(prevState => {
       const { [organName]: _, ...rest } = prevState.descriptions
       return { ...prevState, descriptions: rest }
@@ -115,13 +122,16 @@ export const useReportData = () => {
     allObservationTemplates,
     savedReport,
     editableReport,
-    showAlert,
+    showBottomSheet,
+    isReportEdited,
+    popupData,
 
     handleChangeAdditionalData,
     handleChangeReportTitle,
-    handleReportSwitchSubmit,
+    handlePopupEvent,
     setDescriptionToOrgan,
     handleSetSelectedOrgans,
     removeOrgan,
+    setShowBottomSheet
   }
 }

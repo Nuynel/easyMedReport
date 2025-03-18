@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from "react";
+import React, {useState} from "react";
 import MoreVert from "./icons/more_vert.svg";
-import BottomSheet from "#root/src/shared/ui/BottomSheet";
+import BottomSheet from "./BottomSheet";
 
 type ContextMenuProps = {
   options: Record<string, () => void>
@@ -8,13 +8,6 @@ type ContextMenuProps = {
 
 const ContextMenu = ({options}: ContextMenuProps) => {
   const [isOpen, toggleIsOpen] = useState(false);
-
-  useEffect(() => {
-    const handleDocumentClick = () => toggleIsOpen(false)
-    document.addEventListener('click', handleDocumentClick)
-    return () => document.removeEventListener('click', handleDocumentClick)
-  }, [isOpen]);
-
 
   const handleToggleClick = (e: React.MouseEvent<HTMLButtonElement> ) => {
     e.stopPropagation();
@@ -26,7 +19,7 @@ const ContextMenu = ({options}: ContextMenuProps) => {
       <button onClick={handleToggleClick}>
         <MoreVert/>
       </button>
-      {isOpen && <BottomSheet options={options}/>}
+      {isOpen && (<BottomSheet title='ContextMenu' options={options} onClose={() => toggleIsOpen(false)}/>)}
     </div>
   )
 }

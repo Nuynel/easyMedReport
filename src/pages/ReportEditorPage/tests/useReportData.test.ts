@@ -4,7 +4,7 @@ import { renderHook, act } from '@testing-library/react-hooks';
 import { expect, beforeEach, it, describe, vi, Mock  } from 'vitest'
 // или из '@testing-library/react-hooks' — смотря, что вы используете
 
-import { useReportData } from './useReportData';
+import { useReportData } from '../useReportData';
 
 // Импортируем все методы, которые будем мокать
 import * as tokenMethods from '#root/src/shared/methods/tokenMethods';

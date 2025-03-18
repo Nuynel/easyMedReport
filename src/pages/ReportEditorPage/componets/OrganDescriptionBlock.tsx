@@ -9,12 +9,12 @@ export type OrganDataProps = {
   organData: Record<string, string>, // все дефолтные описания состояний органа
   allSavedData: Record<string, Record<string, string>>, // все текущие описания, в тч редактированные
   setData: (organName: string, pathologies: Record<string, string>) => void,
-  removeData: () => void
+  removeOrgan: () => void
 }
 
 const maskOfNorma = 'норма'
 
-const OrganDescriptionBlock = ({organName, organData, allSavedData, setData, removeData}: OrganDataProps) => {
+const OrganDescriptionBlock = ({organName, organData, allSavedData, setData, removeOrgan}: OrganDataProps) => {
   const [descriptions, setDescriptions] = useState<Record<string, string>>({}) // измененные описания
   // const [selectedPathologies, setSelectedPathologies] = useState<string[]>([]) // лучше сделать геттер от descriptions
   const [newPathology, setNewPathology] = useState('')
@@ -23,6 +23,7 @@ const OrganDescriptionBlock = ({organName, organData, allSavedData, setData, rem
 
   const handleSetNewPathology = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setDescriptions(prevState => ({...prevState, [event.target.value]: organData[event.target.value]}))
+    setData(organName, {...descriptions, [event.target.value]: organData[event.target.value]})
     setNewPathology('')
     // setNewPathology(event.target.value)
   }
@@ -36,14 +37,19 @@ const OrganDescriptionBlock = ({organName, organData, allSavedData, setData, rem
   // //
   // // }
 
-  const handleRemoveData = (pathology: string) => {
+  const handleRemovePathology = (pathology: string) => {
     setDescriptions(prevState => {
       const { [pathology]: _, ...rest } = prevState
       return rest
     })
   }
 
-  const availablePathologies = Object.keys(organData).filter(key => !Object.keys(descriptions).includes(key))
+  console.log(organData)
+
+  const availablePathologies = Object.keys(organData).filter(key => {
+    console.log(333, descriptions, key)
+    return !Object.keys(descriptions).includes(key)
+  })
 
   useEffect(() => {
     if (Object.keys(allSavedData).length) setDescriptions(allSavedData[organName])
@@ -70,6 +76,7 @@ const OrganDescriptionBlock = ({organName, organData, allSavedData, setData, rem
             {'>'}
           </div>
         </button>
+        <ContextMenu options={{'Удалить орган': removeOrgan}}/>
       </div>
       {isOpen && (
         <div className='flex max-w-full gap-2.5 items-center justify-start mt-3 h-12 border-b border-b-[#bababa]'>
@@ -90,7 +97,7 @@ const OrganDescriptionBlock = ({organName, organData, allSavedData, setData, rem
         <div className=' bg-[#f0f0f0]' key={'organDescription'+pathology}>
           <div className='flex w-full justify-between items-center h-12 mt-3'>
             <div className='mr-4'>{pathology}</div>
-            <ContextMenu options={{'Удалить описание': () => handleRemoveData(pathology)}}/>
+            <ContextMenu options={{'Удалить описание': () => handleRemovePathology(pathology)}}/>
           </div>
           <TextEditor
             text={descriptions[pathology]}

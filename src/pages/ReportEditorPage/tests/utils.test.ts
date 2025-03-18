@@ -3,7 +3,7 @@ import {
   getOrganDescription,
   isUnchangedNormal,
   getTemplatesForNormal
-} from "./utils";
+} from "../methods/utils";
 import {OrganDescriptions, Templates} from "#root/types";
 
 

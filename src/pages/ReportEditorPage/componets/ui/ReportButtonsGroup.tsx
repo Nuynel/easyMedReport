@@ -1,30 +1,36 @@
+import ContentCopy from "../../../../shared/ui/icons/content_copy.svg";
+
 type ReportButtonsGroupProps = {
   showAdditionalButton: boolean
   handleSaveReport: () => void,
   copyContent: () => void,
   copyConciseVersion: () => void,
   moveToReports: () => void,
+  disabled: boolean
 }
 
-const ReportButtonsGroup = ({showAdditionalButton, handleSaveReport, copyContent, copyConciseVersion, moveToReports}: ReportButtonsGroupProps) => (
+const ReportButtonsGroup = ({showAdditionalButton, copyContent, copyConciseVersion, disabled}: ReportButtonsGroupProps) => (
   <>
     {showAdditionalButton ? (
       <>
         <button
-          className='bg-green-600 hover:bg-green-500 active:bg-green-600 transition-all duration-300 text-white rounded-xl my-2 w-full h-12'
+          className='flex items-center transition-all disabled:opacity-50 duration-300 gap-4 w-full h-12 border-b border-[#BABABA]'
           onClick={copyContent}
-        >Скопировать всё</button>
+          disabled={disabled}
+        ><ContentCopy/>Скопировать всё</button>
 
         <button
-          className='bg-green-600 hover:bg-green-500 active:bg-green-600 transition-all duration-300 text-white rounded-xl my-2 w-full h-12'
+          className='flex items-center transition-all disabled:opacity-50 duration-300 gap-4 w-full h-12 border-b border-[#BABABA]'
           onClick={copyConciseVersion}
-        >Сокращенное копирование</button>
+          disabled={disabled}
+        ><ContentCopy/>Сокращенное копирование</button>
       </>
     ) : (
       <button
-        className='bg-green-600 hover:bg-green-500 active:bg-green-600 transition-all duration-300 text-white rounded-xl my-2 w-full h-12'
+        className='flex items-center transition-all disabled:opacity-50 duration-300 gap-4 w-full h-12 border-b border-[#BABABA]'
         onClick={copyContent}
-      >Скопировать</button>
+        disabled={disabled}
+      ><ContentCopy/>Скопировать</button>
     )}
   </>
 )

@@ -19,6 +19,9 @@ export default {
       spacing: {
         18: '4.5rem',
       },
+      colors: {
+        overlay: 'rgba(42, 46, 50, 0.5)'
+      },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
       }
